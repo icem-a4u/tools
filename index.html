@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>a4u - tools</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<img style="width: 100%;" src="logo.jpg">
+	<header>
+		<section>
+			<svg xmlns="http://www.w3.org/2000/svg" fill="#e68a00" width="48" height="48" viewBox="-9 -9 40 40">
+				<path stroke="none" fill-rule="even-odd" d="M28 12 a18 18 0 1 1 0 -0.001"></path>
+				<path fill="none" stroke="white" stroke-width="1.5" d="M10 2 l-10 5 l10 5 l10 -5 l-10 -5z m-10 15 l10 5 l10 -5 m-20 -5 l10 5 10-5"></path>
+			</svg>
+			<h2 style="font-size: 26px; padding-left: 8px;">Histogram</h2>
+		</section>
+		<nav id="nav_page">
+			<button onclick="show_part(event);">Home</a>
+		</nav>
+	</header>
+	<main class="bgimg">
+		
+		<section id="Home">
+			<br>
+			<form onsubmit="event.preventDefault();show_histogram(event.target.inputs.value);">
+				<br>
+				<p>This will give the <b>histogram</b> from the students' marks: </p>
+				<!-- <br> -->
+				<!-- <label>Select the method:</label> -->
+					<!-- <select> -->
+						<!-- <option>Back Substitution Elimination</option> -->
+						<!-- <option>Gauss-Jordan</option> -->
+					<!-- </select> -->
+				<!-- <br> -->
+				<br>				
+				<label>Enter the number of divisions to be made of total marks:</label>
+				<input type="number" min="1" max="50" onchange="update_freq(parseInt(this.value),1);" value="10" style="width: 64px;" required>
+				<br>
+				<label>Enter the maximum/total marks:</label>
+				<input type="number" onchange="update_freq(parseInt(this.value),0);" value="100" style="width: 64px;">
+				<br>
+				<div>Each division will be of <big id="freq">10</big> marks.</div>
+				<br>
+				<label>Enter the marks seperated by 'Enter' (individual marks on each line) or directly paste from EXCEL column: </label>
+				<br>
+				<textarea name="inputs" rows="6"></textarea>
+				<br>
+				<input type="submit" value='Solve'>
+			</form>
+			<br>
+			<!-- <div style="text-align: center;"> -->
+				<!-- <iframe class="g_slides_pub" src="https://docs.google.com/presentation/d/e/2PACX-1vR6yT-sDPr3wRsb1ZION_dskWRkaC99DFulzmKRFIXv9X6pfR41i8rpyTHsmf3ltRodg3u0Ay7fcdG6/embed?loop=false&delayms=3000" frameborder="0" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true" style="--g_slides_pub_ratio: calc(1109/1440);"></iframe> -->
+			<!-- </div> -->
+			<section id="solution" style="padding: 12px;"></section>
+		</section>
+	</main>
+</body>
+<script type="text/javascript">
+	function show_part(event)
+	{
+		event.preventDefault();
+		const p=document.querySelectorAll("main>section");
+		for(i of p)
+		{
+			i.style.display='none';
+		}
+		document.querySelectorAll("#"+event.target.innerText.replaceAll(" ","_").replaceAll("-","_"))[0].style.display='revert';
+	}
+</script>
+<script type="text/javascript" src="js/apexcharts.js"></script>
+<script type="text/javascript">
+	var freq=10,max_marks=100,total_students,marks_data=[],groups_catagories=[];
+	function update_freq(v,b)
+	{
+		b ? freq=v : max_marks=v;
+		document.getElementById('freq').innerHTML=(max_marks/freq).toFixed(2);
+	}
+	var options={
+		series: [{
+			name: 'Percentage of students in this group',
+			data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2]
+		}],
+		chart:{
+			height: 400,
+			type: 'bar',
+		},
+		plotOptions:{
+			bar:{
+				borderRadius: 10,
+				dataLabels: {
+					position: 'top', // top, center, bottom
+				},
+			}
+		},
+		dataLabels: {
+			enabled: true,
+			formatter: function (val) {
+				return val.toFixed(2) + "%";
+			},
+			offsetY: -20,
+			style: {
+				fontSize: '12px',
+				colors: ["#304758"]
+			}
+		},
+		xaxis: {
+			categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+			position: 'bottom',
+			axisBorder: {
+				show: false
+			},
+			axisTicks: {
+				show: false
+			},
+			crosshairs: {
+				fill: {
+					type: 'gradient',
+					gradient: {
+						colorFrom: '#D8E3F0',
+						colorTo: '#BED1E6',
+						stops: [0, 100],
+						opacityFrom: 0.4,
+						opacityTo: 0.5,
+					}
+				}
+			},
+			tooltip: {
+				enabled: true,
+			}
+		},
+		yaxis: {
+			axisBorder: {
+				show: false
+			},
+			axisTicks: {
+				show: false,
+			},
+			labels: {
+				show: true,
+				formatter: function (val) {
+					return val + "%";
+				}
+			}
+		},
+		title: {
+			text: 'Groups wise marks',
+			align: 'center',
+			style: {
+				color: '#444'
+			}
+		}
+	};
+	function show_histogram(inputs)
+	{
+		total_students=0;
+		let marks=[];
+		let comments=[];
+		let comments_count=[];
+		groups_catagories=[];
+		marks_data=[];
+		let marks_array=inputs.split("\n");
+		let group_length=max_marks/freq;
+
+		for(let i=0;i<marks_array.length;i++)
+		{
+			let marks_individual=parseFloat(marks_array[i]);
+			if(marks_array[i]=="")
+			{
+				if(i!=marks_array.length-1 || marks_individual>max_marks)
+				{
+					alert("Error in Input Data.");
+					return;
+				}
+				else if(i==marks_array.length-1)
+				{
+					break;
+				}
+			}
+			total_students++;
+			if(isNaN(marks_individual))
+			{
+				if(!comments.includes(marks_array[i]))
+				{
+					comments.push(marks_array[i]);
+					comments_count.push(1);
+				}
+				else
+				{
+					comments_count[comments.indexOf(marks_array[i])]+=1;
+				}
+			}
+			else
+			{
+				marks.push(marks_individual);
+			}
+		}
+		marks.sort();
+
+		marks_data=Array(freq+comments_count.length).fill(0);
+
+
+		for(let i=0;i<comments_count.length;i++)
+		{
+			marks_data[i]=comments_count[i];
+			groups_catagories.push(comments[i]);
+		}
+
+		let tmp=1;
+		for(let i=0;i<marks.length;)
+		{
+			if(marks[i]<=tmp*group_length)
+			{
+				marks_data[comments_count.length+tmp-1]+=1;
+				i++;
+			}
+			else
+			{
+				tmp++;
+			}
+		}
+
+		for(let i=0;i<freq;i++)
+		{
+			groups_catagories.push((i*group_length).toFixed(2)+"-"+((i+1)*group_length).toFixed(2));
+		}
+		
+		let percentage=[];
+		for(let i=0;i<marks_data.length;i++)
+		{
+			percentage.push(marks_data[i]*100/total_students);
+		}
+		
+		options.xaxis.categories=groups_catagories;
+		options.series[0].data=percentage;
+		document.querySelector("#solution").innerHTML="";
+		var chart = new ApexCharts(document.querySelector("#solution"),options);
+		chart.render();
+		
+		let table_str="<table align='center' class='histogram_data'><thead><tr><th>Group</th><th>Frequency</th><th>Percentage</th></tr></thead><tbody>";
+		for(let i=0;i<groups_catagories.length;i++)
+		{
+			table_str+="<tr><td>"+groups_catagories[i]+"</td><td>"+marks_data[i]+"</td><td>"+percentage[i].toFixed(2)+"</td></tr>";
+		}
+		document.querySelector("#solution").insertAdjacentHTML("beforeend",table_str+"<tr><td>Total</td><td>"+total_students+"</td><td></td></tr></tbody></table>");
+	}
+</script>
+</html>
