@@ -166,9 +166,14 @@
 		for(let i=0;i<marks_array.length;i++)
 		{
 			let marks_individual=parseFloat(marks_array[i]);
+			if(marks_individual>max_marks)
+			{
+				alert("Error in Input Data.");
+				return;
+			}
 			if(marks_array[i]=="")
 			{
-				if(i!=marks_array.length-1 || marks_individual>max_marks)
+				if(i!=marks_array.length-1)
 				{
 					alert("Error in Input Data.");
 					return;
