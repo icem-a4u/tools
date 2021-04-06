@@ -95,15 +95,7 @@
 			}
 		},
 		dataLabels: {
-			enabled: true,
-			formatter: function (val) {
-				return val.toFixed(2) + "%";
-			},
-			offsetY: -20,
-			style: {
-				fontSize: '12px',
-				colors: ["#304758"]
-			}
+			enabled: false
 		},
 		xaxis: {
 			categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -140,7 +132,7 @@
 			labels: {
 				show: true,
 				formatter: function (val) {
-					return val + "%";
+					return val;
 				}
 			}
 		},
