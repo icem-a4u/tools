@@ -238,7 +238,7 @@
 		}
 		
 		options.xaxis.categories=groups_catagories;
-		options.series[0].data=percentage;
+		options.series[0].data=marks_data;
 		document.querySelector("#solution").innerHTML="";
 		var chart = new ApexCharts(document.querySelector("#solution"),options);
 		chart.render();
